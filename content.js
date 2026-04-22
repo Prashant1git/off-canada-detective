@@ -31,101 +31,97 @@ function injectUpgradedBadge(productData) {
 
   shadowRoot.innerHTML = `
     <style>
-      .off-card {
+      .off-widget-container {
         position: fixed;
-        bottom: 30px;
-        right: 30px;
-        display: flex;
-        flex-direction: column; /* Changed to column to allow expansion */
-        background: #ffffff;
-        border: 2px solid #e5e7eb;
-        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
-        border-radius: 8px;
-        padding: 12px 18px;
-        font-family: 'Public Sans', Arial, sans-serif;
+        bottom: 24px;
+        right: 24px;
         z-index: 999999;
+        width: 320px;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        background: #ffffff;
+        border-radius: 16px;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1), 0 4px 10px rgba(0, 0, 0, 0.05);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        color: #333333;
+        opacity: 0;
+        transform: translateY(20px);
+        animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         cursor: grab;
         user-select: none;
-        width: max-content;
-        max-width: 280px;
       }
-      .off-card:active { cursor: grabbing; }
-      
-      .header-row {
+      .off-widget-container:active { cursor: grabbing; }
+
+      @keyframes slideUp {
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .off-title {
+        font-size: 16px;
+        font-weight: 600;
+        margin: 0;
+        color: #111827;
         display: flex;
         align-items: center;
-        gap: 12px;
-        width: 100%;
+        justify-content: space-between;
       }
-      .score-circle {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: 42px;
-        height: 42px;
-        border-radius: 50%;
-        font-weight: 900;
-        color: white;
-        font-size: 22px;
-        background-color: #9ca3af; 
-        flex-shrink: 0;
-      }
-      .score-A { background-color: #038141; }
-      .score-B { background-color: #85bb2f; }
-      .score-C { background-color: #fecb02; }
-      .score-D { background-color: #ee8100; }
-      .score-E { background-color: #e63e11; }
-      .score-UNKNOWN { font-size: 11px; }
-      
-      .details { display: flex; flex-direction: column; }
-      .title { font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
-      .off-link { font-size: 14px; font-weight: bold; color: #0050a0; text-decoration: none; cursor: pointer; }
-      .off-link:hover { text-decoration: underline; }
-      
-      /* --- NEW: EXPANDED SECTION CSS --- */
-      .expanded-content {
-        display: none; /* Hidden by default */
-        margin-top: 12px;
-        padding-top: 12px;
-        border-top: 1px solid #e5e7eb;
-        font-size: 13px;
-        color: #374151;
-        line-height: 1.4;
-      }
-      .off-card.expanded .expanded-content {
-        display: block; /* Shows when expanded class is added */
-      }
-      .nova-badge {
+
+      .off-score-badge {
         display: inline-block;
-        background: #4b5563;
-        color: white;
-        padding: 2px 6px;
-        border-radius: 4px;
-        font-size: 11px;
+        padding: 6px 12px;
+        border-radius: 9999px;
         font-weight: bold;
-        margin-top: 6px;
-        margin-bottom: 8px;
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
       }
-      .external-link { color: #0050a0; text-decoration: none; font-weight: bold; font-size: 12px; display: block; }
-      .external-link:hover { text-decoration: underline; }
+
+      .score-A, .score-a { background-color: #038141; color: white; }
+      .score-B, .score-b { background-color: #85BB2F; color: white; }
+      .score-C, .score-c { background-color: #FECB02; color: #333; }
+      .score-D, .score-d { background-color: #EE8100; color: white; }
+      .score-E, .score-e { background-color: #E63E11; color: white; }
+      .score-UNKNOWN, .score-unknown { background-color: #9ca3af; color: white; }
+
+      .off-info {
+        font-size: 13px;
+        line-height: 1.5;
+        color: #4B5563;
+        margin: 0;
+      }
+
+      .off-close-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: #9CA3AF;
+        font-size: 18px;
+        padding: 0;
+        transition: color 0.2s;
+      }
+
+      .off-close-btn:hover {
+        color: #374151;
+      }
     </style>
 
-    <div class="off-card" id="draggable-card">
-      <div class="header-row">
-        <div class="score-circle score-${productData.nutriScore}">
-          ${productData.nutriScore}
-        </div>
-        <div class="details">
-          <span class="title">Open Food Facts Canada</span>
-          <span class="off-link" id="expand-btn">View full details ▾</span>
-        </div>
+    <div class="off-widget-container" id="draggable-card">
+      <div class="off-title">
+        Open Food Facts
+        <button class="off-close-btn" id="close-btn" aria-label="Close">×</button>
       </div>
-      
-      <div class="expanded-content">
-        <strong>${productData.brand}</strong><br/>
-        ${productData.name}<br/>
-        <span class="nova-badge">NOVA: ${productData.nova}</span><br/>
-        <a href="${productData.offLink}" target="_blank" class="external-link">View on OFF Website ↗</a>
+
+      <p class="off-info">Detected product: <strong>${productData.brand} ${productData.name}</strong></p>
+
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <span class="off-info">Nutri-Score:</span>
+        <span class="off-score-badge score-${productData.nutriScore.toLowerCase()}">${productData.nutriScore}</span>
       </div>
     </div>
   `;
@@ -133,24 +129,19 @@ function injectUpgradedBadge(productData) {
   document.body.appendChild(host);
 
   const card = shadowRoot.getElementById('draggable-card');
-  const expandBtn = shadowRoot.getElementById('expand-btn');
-  
-  // --- NEW: Toggle the expand card logic ---
-  expandBtn.addEventListener('click', (e) => {
-    e.stopPropagation(); // Stops the drag action from triggering
-    card.classList.toggle('expanded');
-    // Change the text arrow based on state
-    expandBtn.innerText = card.classList.contains('expanded') ? 'Hide details ▴' : 'View full details ▾';
+  const closeBtn = shadowRoot.getElementById('close-btn');
+
+  closeBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    host.remove();
   });
 
-  // --- DRAG LOGIC (Preserved) ---
+  // --- DRAG LOGIC ---
   let isDragging = false;
   let offsetX, offsetY;
 
   card.addEventListener('mousedown', (e) => {
-    // Ignore drag if clicking the expand button or the external link
-    if (e.target === expandBtn || e.target.tagName.toLowerCase() === 'a') return;
-    
+    if (e.target === closeBtn || e.target.tagName.toLowerCase() === 'a') return;
     isDragging = true;
     offsetX = e.clientX - card.getBoundingClientRect().left;
     offsetY = e.clientY - card.getBoundingClientRect().top;
@@ -175,7 +166,7 @@ function searchOpenFoodFacts(product) {
     let cleanName = product.name.split(',')[0].replace(/Family Size|Format Familial|[0-9]+g/gi, '').trim();
     const query1 = `${product.brand} ${cleanName}`.trim();
     const query2 = `${product.brand} ${cleanName.split(' ').slice(0, 3).join(' ')}`.trim();
-    const query3 = product.brand || "Nutella"; // PASS 3: The Silver Bullet (Brand Only)
+    const query3 = product.brand || "Nutella"; 
     
     console.log(`🔍 Search Pass 1: "${query1}"`);
     
@@ -203,15 +194,26 @@ function searchOpenFoodFacts(product) {
     });
 }
 
-// Helper: Only accepts the API response if it ACTUALLY contains a Nutri-Score!
+// 🐛 FIX 2: STRICTER MATCHING LOGIC
+// We now filter out products that return "unknown" or "not-applicable"
 function isValidMatch(response) {
-    return response && response.success && response.data.products && response.data.products.find(p => p.nutriscore_grade);
+    if (!response || !response.success || !response.data || !response.data.products) return false;
+    // Check if at least one product has a REAL grade (a, b, c, d, e)
+    return response.data.products.some(p => 
+        p.nutriscore_grade && 
+        p.nutriscore_grade !== 'unknown' && 
+        p.nutriscore_grade !== 'not-applicable'
+    );
 }
 
-// Helper: Injects the UI with the best valid data
 function handleSuccessfulMatch(products, fallbackName) {
-    // Find the first product that actually has a Nutri-Score
-    const bestMatch = products.find(p => p.nutriscore_grade) || products[0]; 
+    // 🐛 FIX 2 (cont): Find the FIRST product in the array that has a REAL grade
+    const bestMatch = products.find(p => 
+        p.nutriscore_grade && 
+        p.nutriscore_grade !== 'unknown' && 
+        p.nutriscore_grade !== 'not-applicable'
+    ) || products[0]; 
+
     const score = bestMatch.nutriscore_grade ? bestMatch.nutriscore_grade.toUpperCase() : 'UNKNOWN';
     
     console.log("✅ Match found!", score);
@@ -224,7 +226,180 @@ function handleSuccessfulMatch(products, fallbackName) {
     });
 }
 
-setTimeout(() => {
+function fallbackBarcodeSearch() {
+  const barcodeRegex = /(?:GTIN|UPC|EAN|Barcode)?[\s#:-]*\b(\d{12,14})\b/i;
+  const pageText = document.body.innerText;
+  const match = pageText.match(barcodeRegex);
+  if (match && match[1]) {
+    console.log("🕵️ Detective Engine Fallback: Extracted Barcode ->", match[1]);
+    return match[1];
+  }
+  return null;
+}
+
+function extractFromJsonLD() {
+  const scripts = document.querySelectorAll('script[type="application/ld+json"]');
+  let barcode = null;
+  scripts.forEach(script => {
+    try {
+      const json = JSON.parse(script.innerText);
+      const schemas = Array.isArray(json) ? json : (json['@graph'] || [json]);
+      schemas.forEach(schema => {
+        if (schema.gtin || schema.gtin12 || schema.gtin13 || schema.gtin14) {
+          barcode = schema.gtin || schema.gtin12 || schema.gtin13 || schema.gtin14;
+        }
+      });
+    } catch (e) {}
+  });
+  return barcode;
+}
+
+function fetchProductFromOFF(barcode) {
+  if (!barcode) return;
+  console.log(`📦 Fetching Open Food Facts via barcode: ${barcode}`);
+
+  chrome.runtime.sendMessage({ action: "searchOFF", query: barcode }, (response) => {
+    if (isValidMatch(response)) {
+      return handleSuccessfulMatch(response.data.products, barcode);
+    }
+    console.log("⚠️ Barcode lookup did not return a valid match. Falling back to schema search.");
     const hiddenData = extractProductSchema();
-    if (hiddenData) searchOpenFoodFacts(hiddenData);
-}, 2500);
+    if (hiddenData) {
+      searchOpenFoodFacts(hiddenData);
+    }
+  });
+}
+
+// ==========================================
+// 🥷 FIX: PASSIVE DETECTIVE ENGINE
+// ==========================================
+
+function runDetectivePassively() {
+    console.log("🕵️ Detective Engine: Waiting silently for Walmart to render...");
+
+    // 1. Give Walmart 1.5 seconds to do its thing completely uninterrupted.
+    setTimeout(() => {
+        let barcode = extractFromJsonLD();
+
+        if (barcode) {
+            console.log(`✅ Target Acquired via JSON-LD: ${barcode}`);
+            fetchProductFromOFF(barcode);
+        } else {
+            console.log("⚠️ JSON-LD not ready. Waiting 2 more seconds...");
+            
+            // 2. Try one final time 2 seconds later. If it fails, run the fallback ONCE.
+            setTimeout(() => {
+                barcode = extractFromJsonLD();
+                if (barcode) {
+                    console.log(`✅ Target Acquired via JSON-LD (Attempt 2): ${barcode}`);
+                    fetchProductFromOFF(barcode);
+                } else {
+                    console.log("⚠️ JSON-LD missing entirely. Running Regex fallback ONE TIME...");
+                    barcode = fallbackBarcodeSearch();
+                    if (barcode) {
+                        fetchProductFromOFF(barcode);
+                    } else {
+                        console.log("❌ Product details unavailable. Falling back to schema extraction.");
+                        const hiddenData = extractProductSchema();
+                        if (hiddenData) searchOpenFoodFacts(hiddenData);
+                    }
+                }
+            }, 2000);
+        }
+    }, 1500);
+}
+
+function startDetectiveEngine() {
+    const oldBadge = document.getElementById('off-upgraded-badge');
+    if (oldBadge) oldBadge.remove();
+
+    if (location.href.includes('/ip/') || location.href.includes('/pr/')) {
+        runDetectivePassively();
+    } else {
+        console.log("🛑 Not a product page. Detective Engine sleeping.");
+    }
+}
+
+// 1. Run once on initial page load
+startDetectiveEngine();
+
+// 2. PASSIVE SPA ROUTER (Zero-Bloat, Zero-Loop)
+// Single Page Applications almost always change the <title> tag when you click a new product.
+// We attach a passive observer to the title. No more setInterval loops!
+let lastUrl = location.href;
+const titleObserver = new MutationObserver(() => {
+    const currentUrl = location.href;
+    if (currentUrl !== lastUrl) {
+        lastUrl = currentUrl;
+        console.log("🔄 Navigation detected passively! Restarting engine...");
+        startDetectiveEngine();
+    }
+});
+
+// Start observing the <title> tag for changes
+const titleNode = document.querySelector('title');
+if (titleNode) {
+    titleObserver.observe(titleNode, { subtree: true, characterData: true, childList: true });
+}
+
+// Check if __NEXT_DATA__ is already present on initial load
+const initialNextDataScript = document.getElementById('__NEXT_DATA__');
+if (initialNextDataScript && (location.href.includes('/ip/') || location.href.includes('/pr/'))) {
+    // Process immediately if on product page
+    try {
+        const nextData = JSON.parse(initialNextDataScript.textContent);
+        const productInfo = nextData?.props?.pageProps?.initialData?.product;
+        if (productInfo) {
+            const productData = {
+                name: productInfo.product_name || productInfo.name || '',
+                brand: productInfo.brand || productInfo.brands || '',
+            };
+            const barcode = productInfo.upc || productInfo.gtin || productInfo.barcode;
+            if (barcode) {
+                fetchProductFromOFF(barcode);
+            } else {
+                searchOpenFoodFacts(productData);
+            }
+        }
+    } catch (error) {
+        console.error("Failed to parse initial __NEXT_DATA__ JSON:", error);
+    }
+}
+
+// MutationObserver for __NEXT_DATA__
+const observerCallback = (mutationsList, observer) => {
+    const nextDataScript = document.getElementById('__NEXT_DATA__');
+    if (nextDataScript) {
+        console.log("🎯 __NEXT_DATA__ detected! CAPTCHA solved or page loaded.");
+        observer.disconnect();
+        try {
+            const nextData = JSON.parse(nextDataScript.textContent);
+            console.log("Raw Next.js Payload:", nextData);
+            const productInfo = nextData?.props?.pageProps?.initialData?.product;
+            if (productInfo && (location.href.includes('/ip/') || location.href.includes('/pr/'))) {
+                const productData = {
+                    name: productInfo.product_name || productInfo.name || '',
+                    brand: productInfo.brand || productInfo.brands || '',
+                };
+                const barcode = productInfo.upc || productInfo.gtin || productInfo.barcode;
+                if (barcode) {
+                    fetchProductFromOFF(barcode);
+                } else {
+                    searchOpenFoodFacts(productData);
+                }
+            }
+        } catch (error) {
+            console.error("Failed to parse the __NEXT_DATA__ JSON:", error);
+        }
+    }
+};
+
+const observer = new MutationObserver(observerCallback);
+
+const observerOptions = { 
+    childList: true,
+    subtree: true
+};
+
+console.log("👀 Starting observer to watch for __NEXT_DATA__...");
+observer.observe(document.documentElement, observerOptions);
